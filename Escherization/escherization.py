@@ -60,8 +60,8 @@ def visualize(model, epoch):
             IoU_accuracy = calculate_iou(I_target,I_pred)
             pix_accuracy = calculate_pixel_accuracy(I_target,I_pred)
             with open(os.path.join(path,'log.txt'),'a') as f:
-                f.write('IoU_accuracy={:.4f} pix_accuracy={:.4f}\n'
-                        .format(IoU_accuracy,pix_accuracy))
+                f.write('Epoch={} IoU_accuracy={:.4f} pix_accuracy={:.4f}\n'
+                        .format(epoch, IoU_accuracy, pix_accuracy))
 
         if flow_viz_freq > 0 and epoch % flow_viz_freq == 0:
 
@@ -426,8 +426,11 @@ if __name__ == '__main__':
     learn = Learner(model)
     logger = pl.loggers.CSVLogger(os.path.join(path,'logs'), 
                                   flush_logs_every_n_steps=1000000)
-    trainer = pl.Trainer(max_epochs=epochs,devices=[gpu_id], 
-                         accelerator="gpu", logger=logger, log_every_n_steps=1)
+    if torch.cuda.is_available():
+        trainer = pl.Trainer(max_epochs=epochs,devices=[gpu_id], 
+                            accelerator="gpu", logger=logger, log_every_n_steps=1)
+    else:
+        trainer = pl.Trainer(max_epochs=epochs, logger=logger, log_every_n_steps=1)
 
     ckpt_lst = natsorted(glob(os.path.join(path,'checkpoints','Escherization_*.pth')))
     if len(ckpt_lst)>=1:
@@ -439,4 +442,3 @@ if __name__ == '__main__':
     else:
         os.makedirs(os.path.join(path, 'checkpoints'))
         trainer.fit(learn)
-
