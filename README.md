@@ -1,6 +1,6 @@
 # Flow Symmetrization for Parameterized Constrained Diffeomorphisms
 
-[Paper](https://arxiv.org/abs/2312.06317)
+[[Paper](https://arxiv.org/abs/2312.06317)]
 
 ## Installation
 
